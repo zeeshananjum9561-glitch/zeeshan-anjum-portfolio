@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+//lopping over an Array
+/*
+let name=["anjum","shahi", "mansoor"]; 
+for(let i=0;i<name.length;i++)
+{
+    console.log(name[i]);
+}
+*/
+
+//FIND THE AVERAGE OF MARKS
+/*
+let marks=[23,94,35,45,54];
+let sum=0;
+for(let i=0;i<marks.length;i++)
+
+ {
+    sum+=marks[i]/marks.length;
+ }
+ console.log(sum); 
+ */
+
+ // AVERAGE
+ /*
+ let marks=[23,94,35,45,54];
+let sum=0;
+for(let value of marks)
+{
+    sum+=value/marks.length;
+ }
+ console.log(`average marks of student is = ${sum}`);         // show marks with help of Tamplet Lateral
+ */
+
+ // DOCOUNT PRICE PROGRAm
+/*
+let prices=[345,345,56,45,3,645,]
+for (let i=0; i<prices.length; i++)
+{
+    let offer=prices[i]/10;
+    prices[i]-=offer;
+    console.log("original price", prices[i]);
+    console.log("offer price", offer);
+}
+    */
+
+// POP AND PUSH  in array
+/*
+let food=["phatato", "bnana", "mango", "apple"];
+food.pop();             // here the apple is pop (deleted)
+food.push("beach");       //here the beasch is push at the top
+console.log(food)
+*/
+
+//CONCATINATION OF ARRAY
+
+let fruit=["phatato", "bnana", "mango", "apple"];
+let veg=["carrot","potato", "onion", "tomato"];
+let food=fruit.concat(veg);
+console.log(food);
+
+    </script>
+</body>
+</html>

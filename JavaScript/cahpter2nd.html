@@ -5,15 +5,36 @@
     <script>
       //STRING
         /*let variable='anjum';*/
+
 // Template leteral      it is a speacial type of string
-/* 
-     let item="pen";
+      /*let item="pen";
       let price=10;
-      let tampletlateral=`the cost of ${item} is ${5+9}` ;
-      console.log(tampletlateral);*/
+      let tampletlateral=`the cost of ${item} is ${5+9}`;
+      console.log(tampletlateral); */
 // \n we can use for break of statement within string
 
-let name='zeeshan \n Anjum';
+//STRING MeTHODE  
+let str="hello";
+console.log(str.toLowerCase());      //convrt string to Upper Case
+console.log(str.toUpperCase());     //convrt string to Lower Case
+console.log(str.charAt(1));         //Return charecter  at a position
+console.log(str.length);           //Return String lenght
+console.log(str.indexOf("o"))       //  find the index of char
+console.log(str.replace("h","y"))   //replace char
+console.log(str.slice(2,4))        //2,4 is th index number. from 2 to 4 index will be present
+let str1="concatenate";
+let str2= "concatenate2";
+let con= str1.concat(str2);         // concatenate str1 with str2 
+
+let js="ILove js";
+js=js.replace("I", "s");      //replace the i word to s
+console.log(js);
+
+// Generate a username
+   let name=prompt("enter your name");
+   username="@"+name+name.length;
+   console.log(username);
+
   </script>
 </body> 
-</html
+</html>

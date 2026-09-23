@@ -449,7 +449,7 @@ body {
   padding: 10px 8px;
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.03);
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition: background, 0.2s ease, transform 0.2s ease;
 }
 
 .detail:hover {
@@ -603,6 +603,7 @@ body {
   </main>
 
   <script>
+    
     /* ============================================================
    SKYLINE — Weather App Logic
    Vanilla JS, Fetch API, async/await.
@@ -610,14 +611,14 @@ body {
    conditions + today's astro data for sunrise/sunset in one call)
    ============================================================ */
 
-// ---------------------------------------------------------------
-// Configuration
-// ---------------------------------------------------------------
 const CONFIG = {
-  // Replace with your own key from https://www.weatherapi.com/ if needed.
+  
   API_KEY: "6c39d0e7706645d681255107260507",
-  // Using forecast.json (not current.json) because it's the endpoint
-  // that also returns today's sunrise/sunset under forecast.astro.
+  
+  // ---------------------------------------------------------------
+// Configuration
+// --------------------------------------------------------------
+
   BASE_URL: "https://api.weatherapi.com/v1/forecast.json",
   AQI: "yes",
 };
@@ -854,3 +855,13 @@ window.addEventListener("DOMContentLoaded", () => {
   </script>
 </body>
 </html>
+
+
+
+<input
+  type="text"
+  id="cityInput"
+  class="search__input"
+  placeholder="Search a city — e.g. Peshawar"
+  aria-label="City name"
+/>
